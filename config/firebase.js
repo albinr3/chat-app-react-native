@@ -1,6 +1,6 @@
 import { initializeApp, getApps} from 'firebase/app';
 import {initializeAuth, getAuth} from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getReactNativePersistence } from 'firebase/auth/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {REACT_APP_APIKEY, 
@@ -36,4 +36,6 @@ if (getApps().length < 1) {
 }
 
 export default auth;
-export const database = getFirestore();
+export const database = initializeFirestore(firebaseApp, {
+    experimentalForceLongPolling: true,
+  });

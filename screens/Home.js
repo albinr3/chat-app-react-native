@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { View, Pressable, Image, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../colors';
 
