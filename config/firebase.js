@@ -39,3 +39,4 @@ export default auth;
 export const database = initializeFirestore(firebaseApp, {
     experimentalForceLongPolling: true,
   });
+

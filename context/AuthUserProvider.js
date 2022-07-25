@@ -7,18 +7,19 @@ const AuthUserContext = createContext();
 export const AuthUserProvider = (props) => {
 
     const {children} = props;
-    const [user, setUser] = useState({})
+    const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const logOut = onAuthStateChanged(auth, async authenticatedUser => {
+        
+        const logOut = onAuthStateChanged(auth, authenticatedUser => { //this observer get excuted even inside an useeffect
             authenticatedUser ? setUser(authenticatedUser) : setUser(null);
-            setLoading(false)
+            console.log("onAuthStateChanged executed !!")
         })
 
-        return () => logOut();
+        return ()=> logOut;
           
-    }, [user])
+    }, [])
 
     
     return(

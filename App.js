@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {SafeAreaView,StyleSheet,} from 'react-native';
+import {StyleSheet,} from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -37,10 +37,10 @@ const AuthStack = () => {
 }
 
 const RootNavigator = () => {
-  const {user, setUser} = useUserAuth();
+  const {user} = useUserAuth();
 
   return(
-    // Si hay un usurario loguueado entonces muestra el stack de chat
+    // if there is a logged user then show chat stack
     <NavigationContainer>
       {user ? <ChatStack/> : <AuthStack/>} 
     </NavigationContainer>

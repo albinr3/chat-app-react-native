@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Pressable, Image, StyleSheet } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../colors';
@@ -25,7 +25,7 @@ const Home = ({navigation}) => {
             ),
         });
     }, [navigation]);
-
+ 
     return (
         <View style={s.container}>
             <Pressable
