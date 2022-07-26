@@ -13,6 +13,7 @@ import Chat from "./screens/Chat"
 import Login from './screens/Login';
 import SignUp from './screens/SignUp';
 import Home from "./screens/Home"
+import Profile from "./screens/Profile"
 
 const Stack = createStackNavigator();
 
@@ -20,9 +21,24 @@ const Stack = createStackNavigator();
 
 const ChatStack = () => {
   return(
-    <Stack.Navigator defaultScreenOptions={Home}>
+    <Stack.Navigator defaultScreenOptions={Profile}
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#00AEFF",
+          shadowOpacity: 0,
+          elevation: 0
+        },
+        headerTintColor: "white"
+
+    }}
+    >
+      <Stack.Screen name='Profile' component={Profile} />
       <Stack.Screen name='Home' component={Home} />
-      <Stack.Screen name='Chat' component={Chat} />
+      <Stack.Screen name='Chat' component={Chat}
+        options={({route}) => ({
+          title: route.params.userName
+        })}
+      />
     </Stack.Navigator>
   )
 }
@@ -37,7 +53,7 @@ const AuthStack = () => {
 }
 
 const RootNavigator = () => {
-  const {user} = useUserAuth();
+  const {user,} = useUserAuth();
 
   return(
     // if there is a logged user then show chat stack
@@ -51,7 +67,7 @@ const App= () => {
   
   return (
     <AuthUserProvider>
-      <RootNavigator/>
+      {useUserAuth.loading ? <Text>Loading...</Text> : <RootNavigator/>}
     </AuthUserProvider>
     
   );

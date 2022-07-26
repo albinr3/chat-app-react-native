@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import { StyleSheet, Text, View, TextInput, Image,  Pressable, SafeAreaView, Alert } from 'react-native'
-import auth from "../config/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signUp } from "../config/firebase";
 const backImage = require("../assets/backImage.png")
 
 const SignUp = ({navigation}) => {
@@ -14,14 +13,8 @@ const SignUp = ({navigation}) => {
             Alert.alert("ERROR", "Email or Passwords are empty");
             return;
         }
-
-        try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            console.log("Success created account!")
-        } catch (error) {
-            Alert.alert("Sign Up Error", error.message)
-            console.log(error)
-        }
+        //function from firebase config file
+        signUp(email, password)
     }
     
         
@@ -54,7 +47,7 @@ const SignUp = ({navigation}) => {
                 onChangeText={setPassword}
             />
 
-            <Pressable style={s.button} onPress={() => handleSignUp()}>
+            <Pressable disabled={!password || !email} style={s.button} onPress={() => handleSignUp()}>
                     <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}>Sign Up</Text>
             </Pressable>
 

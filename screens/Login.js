@@ -1,27 +1,20 @@
 import React, {useState} from "react";
 import { StyleSheet, Text, View, TextInput, Image,  Pressable, SafeAreaView, Alert } from 'react-native'
-import auth from "../config/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
 const backImage = require("../assets/backImage.png")
+import { signIn } from "../config/firebase";
 
 const Login = ({navigation}) => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleLogin = async () =>{
+    const handleLogin = () => {
         //validation
         if([email, password].includes("")){
             Alert.alert("ERROR", "Email or Passwords are empty");
             return;
         }
-
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            console.log("Success Login!")
-        } catch (error) {
-            Alert.alert("Login Error", error.message)
-            console.log(error)
-        }
+        //function from firebase config file
+        signIn(email, password); 
     }
     
         
@@ -54,7 +47,7 @@ const Login = ({navigation}) => {
                 onChangeText={setPassword}
             />
 
-            <Pressable style={s.button} onPress={() => handleLogin()}>
+            <Pressable disabled={!password || !email} style={s.button} onPress={() => handleLogin()}>
                     <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Log In</Text>
             </Pressable>
 

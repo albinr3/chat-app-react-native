@@ -4,8 +4,8 @@ import React, {
     useCallback
   } from 'react';
 
-  import { Pressable} from 'react-native';
-  import { GiftedChat } from 'react-native-gifted-chat';
+  import { Pressable, View} from 'react-native';
+  import {Send, GiftedChat } from 'react-native-gifted-chat';
   import {
     collection,
     addDoc,
@@ -16,6 +16,7 @@ import React, {
   import { signOut } from 'firebase/auth';
   import auth, {database} from '../config/firebase';
   import Icon from 'react-native-vector-icons/FontAwesome';
+  import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
   import colors from '../colors';
   import useUserAuth from "../hooks/useUserAuth.js"
 
@@ -24,7 +25,7 @@ import React, {
 
     const [messages, setMessages] = useState([]); //messages array
     const {user} = useUserAuth(); //authenticated user from the context provider
-
+   
   //sign out function from firebase
   const onSignOut = async () => {
     try {
@@ -108,6 +109,28 @@ import React, {
     
   }, []);
 
+  const renderSend = (props) => {
+    return (
+      <Send {...props}>
+        <View>
+          <MaterialCommunityIcons
+            name="send-circle"
+            style={{marginBottom: 5, marginRight: 5}}
+            size={32}
+            color="#2e64e5"
+          />
+        </View>
+      </Send>
+    );
+  };
+
+  const scrollToBottomComponent = () => {
+    return(
+      <Icon name='angle-double-down' size={22} color='#333' />
+    );
+  }
+
+
   return (
     <GiftedChat
       messages={messages}
@@ -121,6 +144,10 @@ import React, {
         backgroundColor: '#fff',
         borderRadius: 20,
       }}
+      alwaysShowSend
+      renderSend={renderSend}
+      scrollToBottom
+      scrollToBottomComponent={scrollToBottomComponent}
       user={{
         _id: user?.email,
         avatar: 'https://i.pravatar.cc/300'
