@@ -8,6 +8,8 @@ export const AuthUserProvider = (props) => {
 
     const {children} = props;
     const [user, setUser] = useState(null)
+    const [rooms, setRooms] = useState([])
+    const [unfilteredRooms, setUnfilteredRooms] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -26,7 +28,11 @@ export const AuthUserProvider = (props) => {
         <AuthUserContext.Provider value={{
             user, 
             setUser,
-            loading 
+            loading,
+            rooms,
+            setRooms,
+            unfilteredRooms,
+            setUnfilteredRooms
         }}>
 
             {children}

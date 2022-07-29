@@ -13,12 +13,12 @@ export async function pickImage() {
     includeBase64: false,
   };
   const result = await launchImageLibrary(options);
-  const imagePath = result.assets[0].uri;
+  const imagePath = result
   return imagePath
 }
 
 
-export async function uploadImage(imagePath, userId) {
+export async function uploadImage(imagePath, userId, fireImagePath, imageName) {
   
   // Why are we using XMLHttpRequest? See:
   // https://github.com/expo/expo/issues/2402#issuecomment-443726662
@@ -35,8 +35,9 @@ export async function uploadImage(imagePath, userId) {
     xhr.open('GET', imagePath, true);
     xhr.send(null);
   });
+ 
 
-  const imageRef = ref(storage, `images/${userId}/profilepicture.jpg`);
+  const imageRef = ref(storage, `${fireImagePath}/${userId}/${imageName}.jpg`);
 
   const snapshot = await uploadBytesResumable(imageRef, blob, {
     contentType: 'image/jpeg',

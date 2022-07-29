@@ -1,9 +1,11 @@
 
 import React from 'react';
-import {StyleSheet,} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { AuthUserProvider } from './context/AuthUserProvider';
 import useUserAuth from './hooks/useUserAuth';
@@ -14,14 +16,52 @@ import Login from './screens/Login';
 import SignUp from './screens/SignUp';
 import Home from "./screens/Home"
 import Profile from "./screens/Profile"
+import Photo from "./screens/Photo"
+import Contacts from "./screens/Contacts"
 
 const Stack = createStackNavigator();
+const Tab = createMaterialTopTabNavigator();
 
-
-
+const HomeTab = () => {
+  return (
+    <Tab.Navigator
+      screenOptions={({route}) => {
+        return{
+          tabBarLabel: () => {
+            if(route.name === "Photo") {
+              return <MaterialCommunityIcons name="camera" size={25} color="white"/>
+            } else {
+              return (
+                <Text style={{ color: "white", fontSize: 18}}>
+                  {route.name.toLocaleUpperCase()}
+                </Text>
+              );
+            }
+          },
+          tabBarShowIcon: true,
+          tabBarLabelStyle: {
+            color: "white",
+          },
+          tabBarIndicatorStyle: {
+            backgroundColor: "white",
+          },
+          tabBarStyle: {
+            backgroundColor: "#00AEFF",
+          },
+          
+        }
+      }}
+      initialRouteName="Home"
+    >
+      <Tab.Screen name='Photo' component={Photo}/>
+      <Tab.Screen name='Home' component={Home}/>
+    </Tab.Navigator>
+  )
+}
 const ChatStack = () => {
+  const {user} = useUserAuth();
   return(
-    <Stack.Navigator defaultScreenOptions={Profile}
+    <Stack.Navigator
       screenOptions={{
         headerStyle: {
           backgroundColor: "#00AEFF",
@@ -32,13 +72,19 @@ const ChatStack = () => {
 
     }}
     >
-      <Stack.Screen name='Profile' component={Profile} />
-      <Stack.Screen name='Home' component={Home} />
+      {!user.displayName && (
+        <Stack.Screen name='Profile' component={Profile} />
+      )}
+
+      <Stack.Screen name='HomeTab' component={HomeTab} />
+      
       <Stack.Screen name='Chat' component={Chat}
         options={({route}) => ({
           title: route.params.userName
         })}
       />
+
+      <Stack.Screen name='Contacts' options= {{ title: "Select Contact" }} component={Contacts}/>
     </Stack.Navigator>
   )
 }
@@ -53,8 +99,8 @@ const AuthStack = () => {
 }
 
 const RootNavigator = () => {
+  
   const {user,} = useUserAuth();
-
   return(
     // if there is a logged user then show chat stack
     <NavigationContainer>

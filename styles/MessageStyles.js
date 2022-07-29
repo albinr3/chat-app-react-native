@@ -38,6 +38,16 @@ export const TextSection = styled.View`
   color: black;
 `;
 
+export const TextSectionContact = styled.View`
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+  padding-left: 0;
+  margin-left: 30px;
+  width: 300px;
+  color: black;
+`;
+
 export const UserInfoText = styled.View`
   flex-direction: row;
   justify-content: space-between;
@@ -45,6 +55,13 @@ export const UserInfoText = styled.View`
 `;
 
 export const UserName = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Lato-Regular';
+  color: black;
+`;
+
+export const UserNameContact = styled.Text`
   font-size: 14px;
   font-weight: bold;
   font-family: 'Lato-Regular';
