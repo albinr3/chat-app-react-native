@@ -28,6 +28,12 @@ export const UserImg = styled.Image`
   border-radius: 25px;
 `;
 
+export const UserImgContactChat = styled.Image`
+  width: 40px;
+  height: 40px;
+  border-radius: 25px;
+`;
+
 export const TextSection = styled.View`
   flex-direction: column;
   justify-content: center;
@@ -54,6 +60,8 @@ export const UserInfoText = styled.View`
   margin-bottom: 5px;
 `;
 
+
+
 export const UserName = styled.Text`
   font-size: 14px;
   font-weight: bold;
@@ -66,6 +74,13 @@ export const UserNameContact = styled.Text`
   font-weight: bold;
   font-family: 'Lato-Regular';
   color: black;
+`;
+
+export const UserNameContactChat = styled.Text`
+  font-size: 18px;
+  font-family: 'Lato-Regular';
+  color: white;
+  font-weight: bold;
 `;
 
 export const PostTime = styled.Text`

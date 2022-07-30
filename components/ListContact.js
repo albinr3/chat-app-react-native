@@ -12,18 +12,20 @@ import {
   MessageText,
   TextSectionContact,
 } from '../styles/MessageStyles';
+import { useNavigation } from '@react-navigation/native';
 
-export default function Listcontact({contact}) {
+export default function Listcontact({contact, room}) {
   let photo;
   if(contact.userDoc?.photoURL) {
     photo= {uri: contact.userDoc.photoURL}
   } else {
     photo = require("../assets/users/empty-profile.jpg")
   }
-  console.log(contact)
+ 
+  navigation = useNavigation()
   return (
     <Container>
-      <Card onPress={() => navigation.navigate('Chat', {contact, photo})}>
+      <Card onPress={() => navigation.navigate('Chat', {contact, photo, room})}>
         <UserInfo>
           <UserImgWrapper>
             <UserImg source={ photo} />

@@ -1,7 +1,8 @@
 import React, {
     useState,
     useLayoutEffect,
-    useCallback
+    useCallback,
+    useEffect
   } from 'react';
 
   import { Pressable, View} from 'react-native';
@@ -12,6 +13,8 @@ import React, {
     orderBy,
     query,
     onSnapshot,
+    doc,
+    setDoc,
   } from 'firebase/firestore';
   import { signOut } from 'firebase/auth';
   import auth, {database} from '../config/firebase';
@@ -21,10 +24,17 @@ import React, {
   import useUserAuth from "../hooks/useUserAuth.js"
 
 
-  export default function Chat({navigation}) {
+  export default function Chat({navigation, route}) {
 
     const [messages, setMessages] = useState([]); //messages array
     const {user} = useUserAuth(); //authenticated user from the context provider
+    const {room, contact, photo} = route.params
+    
+    const userExternal = contact
+    const roomId = room ? room.id : Date.now().toString()
+   
+    const roomRef = doc(database, "rooms", roomId);
+    const roomMessagesRef = collection(database, "rooms", roomId, "messages")
    
   //sign out function from firebase
   const onSignOut = async () => {
@@ -36,46 +46,75 @@ import React, {
     }
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <Pressable
-          style={{marginRight: 10}}
-          onPress={()=>onSignOut()}>
+  useEffect( () => {
+    (async () => {
+      if(!room){
+      const currUserData = {
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL
+      }
 
-            <Icon name="sign-out" size={24} color={colors.gray} style={{marginRight: 10}}/>
+      const userExternalData = {
+        displayName: userExternal.contactName,
+        email: userExternal.email,
+        photoURL: photo
+      }
 
-        </Pressable>
-      )
-    });
-  }, [navigation]);
+      const roomData = {
+        participants : [currUserData, userExternalData],
+        participantsArray : [currUserData.email, userExternalData.email]
+      }
+      console.log(JSON.stringify(userExternal), "estoooooo")
+      try {
+        await setDoc(roomRef, roomData)
+        console.log("room creada")
+      } catch (error) {
+        console.log(error)
+      }
+    }})()
+  }, [])
 
-  useLayoutEffect(() => {
-    //here we get the chat colletion or we create it ffrom firebase
-    const collectionRef = collection(database, 'chats'); 
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <Pressable
+  //         style={{marginRight: 10}}
+  //         onPress={()=>onSignOut()}>
 
-    //here we do a query selecting all the messages from chats, order by date.
-    const newQuery = query(collectionRef, orderBy('createdAt', 'desc'));
+  //           <Icon name="sign-out" size={24} color={colors.gray} style={{marginRight: 10}}/>
 
-    //here we have an observer called onSnapshor, this keep listening from firebase,
-    //waiting from any changes to executes the callback inside.
-    const querySnapshot = onSnapshot(newQuery, snapshot => {
-      console.log('Chats updated');
-      //now we will set the messages in the state from the database
-      setMessages(
-        //here we iterate over the list of messages obtained from the query.
-        //and we create a new list and inside it we create a new object with the info of each message.
-        snapshot.docs.map(doc => ({
-        _id: doc.data()._id,
-        createdAt: doc.data().createdAt.toDate(),
-        text: doc.data().text,
-        user: doc.data().user
-        }))
-      );
-    });
+  //       </Pressable>
+  //     )
+  //   });
+  // }, [navigation]);
 
-    return querySnapshot;
-  }, []);
+  // useLayoutEffect(() => {
+  //   //here we get the chat colletion or we create it ffrom firebase
+  //   const collectionRef = collection(database, 'chats'); 
+
+  //   //here we do a query selecting all the messages from chats, order by date.
+  //   const newQuery = query(collectionRef, orderBy('createdAt', 'desc'));
+
+  //   //here we have an observer called onSnapshor, this keep listening from firebase,
+  //   //waiting from any changes to executes the callback inside.
+  //   const querySnapshot = onSnapshot(newQuery, snapshot => {
+  //     console.log('Chats updated');
+  //     //now we will set the messages in the state from the database
+  //     setMessages(
+  //       //here we iterate over the list of messages obtained from the query.
+  //       //and we create a new list and inside it we create a new object with the info of each message.
+  //       snapshot.docs.map(doc => ({
+  //       _id: doc.data()._id,
+  //       createdAt: doc.data().createdAt.toDate(),
+  //       text: doc.data().text,
+  //       user: doc.data().user
+  //       }))
+  //     );
+  //   });
+
+  //   return querySnapshot;
+  // }, []);
 
   //on send new message function, it need a new message as arg.
   // it update the state getting the previous array of messages
@@ -92,7 +131,7 @@ import React, {
     //we destruct the info from the new message array
     const { _id, createdAt, text, user } = newMessage[0]; 
 
-    //the we add it to the firestore
+    //then we add it to the firestore
     try {
       const docRef = await addDoc(collection(database, 'chats'), {
         _id,

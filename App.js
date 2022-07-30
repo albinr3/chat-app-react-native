@@ -19,6 +19,8 @@ import Profile from "./screens/Profile"
 import Photo from "./screens/Photo"
 import Contacts from "./screens/Contacts"
 
+import ChatHeader from './components/ChatHeader';
+
 const Stack = createStackNavigator();
 const Tab = createMaterialTopTabNavigator();
 
@@ -79,9 +81,7 @@ const ChatStack = () => {
       <Stack.Screen name='HomeTab' component={HomeTab} />
       
       <Stack.Screen name='Chat' component={Chat}
-        options={({route}) => ({
-          title: route.params.userName
-        })}
+        options={{headerTitle: (props) => <ChatHeader {...props}/>}}
       />
 
       <Stack.Screen name='Contacts' options= {{ title: "Select Contact" }} component={Contacts}/>

@@ -49,7 +49,7 @@ export async function uploadImage(imagePath, userId, fireImagePath, imageName) {
   return url
 }
 const Helper = () => {
-  console.log('ess', path);
+  
   return (
     <>
       <Text>hola {imageNew}</Text>
