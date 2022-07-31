@@ -5,7 +5,7 @@ import { UserImgContactChat, UserImgWrapper, UserInfo,TextSectionContact, UserIn
 
 const ChatHeader = () => {
     const route = useRoute()
-    console.log(route)
+    
   return (
     <UserInfo>
         <UserImgWrapper>

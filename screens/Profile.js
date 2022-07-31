@@ -36,7 +36,7 @@ const Profile = ({navigation}) => {
       displayName,
       email: user.email,
     };
-    console.log(photoUrl)
+    
     if (photoUrl) {
       userData.photoURL = photoUrl;
     }

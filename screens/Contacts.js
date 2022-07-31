@@ -23,7 +23,7 @@ const Contacts = () => {
 }
 
 function ContactPreview({ contact, image }) {
-    const { unfilteredRooms, rooms } = useUserAuth();
+    const { unfilteredRooms } = useUserAuth();
     const [user, setUser] = useState(contact);
   
     useEffect(() => {
@@ -40,7 +40,7 @@ function ContactPreview({ contact, image }) {
       return () => unsubscribe();
     }, []);
     return (
-        <ListContact contact={user} room={rooms.find(room => room.participantsArray.includes(contact.email))}/> 
+        <ListContact contact={user} room={unfilteredRooms.find(room => room.participantsArray.includes(contact.email))}/> 
     );
   }
 

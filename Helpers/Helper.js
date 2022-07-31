@@ -4,6 +4,8 @@ import {ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage';
 import {Text, Image} from 'react-native';
 import React, {useState} from 'react';
 
+
+//function to select an image from the device
 export async function pickImage() {
   const options = {
     storageOptions: {
@@ -17,7 +19,7 @@ export async function pickImage() {
   return imagePath
 }
 
-
+//function to upload an image from the device to firebase
 export async function uploadImage(imagePath, userId, fireImagePath, imageName) {
   
   // Why are we using XMLHttpRequest? See:

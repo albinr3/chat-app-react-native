@@ -5,7 +5,7 @@ import React, {
     useEffect
   } from 'react';
 
-  import { Pressable, View} from 'react-native';
+  import { ImageBackground, Pressable, View} from 'react-native';
   import {Send, GiftedChat } from 'react-native-gifted-chat';
   import {
     collection,
@@ -27,9 +27,14 @@ import React, {
   export default function Chat({navigation, route}) {
 
     const [messages, setMessages] = useState([]); //messages array
+    const [roomHash, setRoomHash] = useState(""); 
     const {user} = useUserAuth(); //authenticated user from the context provider
     const {room, contact, photo} = route.params
-    
+    const userSender = {
+      name: user.displayName,
+      _id: user.uid,
+      avatar: user.photoURL
+    }
     const userExternal = contact
     const roomId = room ? room.id : Date.now().toString()
    
@@ -65,13 +70,17 @@ import React, {
         participants : [currUserData, userExternalData],
         participantsArray : [currUserData.email, userExternalData.email]
       }
-      console.log(JSON.stringify(userExternal), "estoooooo")
+      
       try {
         await setDoc(roomRef, roomData)
         console.log("room creada")
+        emailHash = `${currUserData.email}:${userExternalData.email}`
+        setRoomHash(emailHash)
       } catch (error) {
         console.log(error)
       }
+
+      
     }})()
   }, [])
 
@@ -89,64 +98,45 @@ import React, {
   //   });
   // }, [navigation]);
 
-  // useLayoutEffect(() => {
-  //   //here we get the chat colletion or we create it ffrom firebase
-  //   const collectionRef = collection(database, 'chats'); 
+  useLayoutEffect(() => {
 
-  //   //here we do a query selecting all the messages from chats, order by date.
-  //   const newQuery = query(collectionRef, orderBy('createdAt', 'desc'));
+    //here we have an observer called onSnapshot, this keep listening from firebase,
+    //waiting from any changes to executes the callback inside.
+    const querySnapshot = onSnapshot(roomMessagesRef, snapshot => {
+      
+      const messagesFirestore = snapshot
+        .docChanges()
+        .filter(({ type }) => type === "added")
+        .map(({ doc }) => {
+          const message = doc.data();
+          return { ...message, createdAt: message.createdAt.toDate() };
+        })
+        
+      appendMessages(messagesFirestore);
+    });
 
-  //   //here we have an observer called onSnapshor, this keep listening from firebase,
-  //   //waiting from any changes to executes the callback inside.
-  //   const querySnapshot = onSnapshot(newQuery, snapshot => {
-  //     console.log('Chats updated');
-  //     //now we will set the messages in the state from the database
-  //     setMessages(
-  //       //here we iterate over the list of messages obtained from the query.
-  //       //and we create a new list and inside it we create a new object with the info of each message.
-  //       snapshot.docs.map(doc => ({
-  //       _id: doc.data()._id,
-  //       createdAt: doc.data().createdAt.toDate(),
-  //       text: doc.data().text,
-  //       user: doc.data().user
-  //       }))
-  //     );
-  //   });
-
-  //   return querySnapshot;
-  // }, []);
+    return querySnapshot;
+  }, []);
 
   //on send new message function, it need a new message as arg.
   // it update the state getting the previous array of messages
   // and we pass the previous messages and the new as args 
   //to the giftedchat append method.
-  const onSend = useCallback(async (newMessage = []) => {
+  const appendMessages = useCallback((messages) => {
     setMessages(previousMessages =>{
-      GiftedChat.append(previousMessages, newMessage)
+      GiftedChat.append(previousMessages, messages)
     });
     
-    //now that we updated the state with the new message,
-    //we will send the new message to the firestore database
+  }, [messages]);
 
-    //we destruct the info from the new message array
-    const { _id, createdAt, text, user } = newMessage[0]; 
-
-    //then we add it to the firestore
-    try {
-      const docRef = await addDoc(collection(database, 'chats'), {
-        _id,
-        createdAt,
-        text,
-        user
-      });
-      console.log("Document written with ID: ", docRef.id);
-        
-    } catch (error) {
-      console.log(error)
-    }   
-    
-    
-  }, []);
+  async function onSend(messages = []) {
+    console.log(user, "user")
+    console.log(messages, "mensajes")
+    const writes = messages.map((m) => addDoc(roomMessagesRef, m));
+    const lastMessage = messages[messages.length - 1];
+    writes.push(updateDoc(roomRef, { lastMessage }));
+    await Promise.all(writes);
+  }
 
   const renderSend = (props) => {
     return (
@@ -171,27 +161,26 @@ import React, {
 
 
   return (
-    <GiftedChat
-      messages={messages}
-      showAvatarForEveryMessage={false}
-      showUserAvatar={false}
-      onSend={messages => onSend(messages)} //here we pass the new message to the function
-      messagesContainerStyle={{
-        backgroundColor: '#fff'
-      }}
-      textInputStyle={{
-        backgroundColor: '#fff',
-        borderRadius: 20,
-      }}
-      alwaysShowSend
-      renderSend={renderSend}
-      scrollToBottom
-      scrollToBottomComponent={scrollToBottomComponent}
-      user={{
-        _id: user?.email,
-        avatar: 'https://i.pravatar.cc/300'
-      }}
-    />
+    <ImageBackground style={{flex: 1}} resizeMode='cover' source={require("../assets/Background-chat-image.jpg")}>
+      <GiftedChat
+        messages={messages}
+        showAvatarForEveryMessage={false}
+        showUserAvatar={false}
+        onSend={onSend} //here we pass the new message to the function
+        messagesContainerStyle={{
+          backgroundColor: '#fff'
+        }}
+        textInputStyle={{
+          backgroundColor: '#fff',
+          borderRadius: 20,
+        }}
+        alwaysShowSend
+        // renderSend={renderSend}
+        // scrollToBottom
+        // scrollToBottomComponent={scrollToBottomComponent}
+        user={userSender}
+      />
+  </ImageBackground>
   );
 }
 

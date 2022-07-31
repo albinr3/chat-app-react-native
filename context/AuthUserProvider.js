@@ -16,7 +16,7 @@ export const AuthUserProvider = (props) => {
         const logOut = onAuthStateChanged(auth, authenticatedUser => { //this observer get excuted even inside an useeffect
             setLoading(false) 
             authenticatedUser ? setUser(authenticatedUser) : setUser(null);
-            console.log("onAuthStateChanged executed !!")
+            
         })
 
         return ()=> logOut;

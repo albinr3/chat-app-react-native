@@ -21,7 +21,7 @@ import {
 
 
 const Home = ({navigation}) => {
-    const {user, rooms, setRooms} = useUserAuth()
+    const {user, rooms, setRooms, unfilteredRooms, setUnfilteredRooms} = useUserAuth()
 
     useLayoutEffect(() => {
         //here we get the chat colletion or we create it ffrom firebase
@@ -33,19 +33,20 @@ const Home = ({navigation}) => {
         //here we have an observer called onSnapshot, this keep listening from firebase,
         //waiting from any changes to executes the callback inside.
         const querySnapshot = onSnapshot(newQuery, snapshot => {
-          console.log('Chats updated');
+         
           
           
           //here we iterate over the list of rooms obtained from the query.
           //and we filter to not show the empty rooms, and then we create
           // a new list and inside it we create a new object with the info of each room.
-          const parsedRooms = snapshot.docs.filter(doc => doc.data().lastMessage).map(doc => ({
+          const parsedRooms = snapshot.docs.map(doc => ({
           ...doc.data(),
           id: doc.id,
           userExternal: doc.data().participants.find(p => p.email !== user.email)
           }));
           //now we will set the rooms in the state from the database
-          setRooms(parsedRooms)
+          setUnfilteredRooms(parsedRooms)
+          setRooms(parsedRooms.filter((doc)=> doc.lastMessage))
         });
     
         return querySnapshot;
@@ -120,15 +121,23 @@ const Home = ({navigation}) => {
         },
       ];
 
+      const getUserExternal = (participants, user) => {
+        const userExternal = participants.filter((participant) => {
+         user.email !== participant.email 
+        })
+
+        return userExternal
+      }
 
     return (
         <Container>
             <FlatList 
-            data={Messages}
+            data={rooms}
             keyExtractor={item=>item.id}
             style={{borderBottomWidth: 0}}
             renderItem={({item}) => (
-                <Card onPress={() => navigation.navigate('Chat', {userName: item.contactName})}>
+                <Card onPress={() => navigation.navigate('Chat', 
+                  {room: item, contact: getUserExternal(item.participants, user), photo: getUserExternal(item.participants, user).photoURL})}>
                     <UserInfo>
                         <UserImgWrapper>
                             <UserImg source={item.userImg} />
