@@ -40,7 +40,7 @@ function ContactPreview({ contact, image }) {
       return () => unsubscribe();
     }, []);
 
-    useEffect(()=> console.log(user), [user])
+    
     return (
         <ListContact contact={user} room={unfilteredRooms.find(room => room.participantsArray.includes(contact.email))}/> 
     );

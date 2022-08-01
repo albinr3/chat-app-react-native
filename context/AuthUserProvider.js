@@ -2,6 +2,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import React, {useState, useEffect, createContext} from "react";
 import auth from "../config/firebase";
 
+
 const AuthUserContext = createContext();
 
 export const AuthUserProvider = (props) => {
@@ -11,6 +12,7 @@ export const AuthUserProvider = (props) => {
     const [rooms, setRooms] = useState([])
     const [unfilteredRooms, setUnfilteredRooms] = useState([])
     const [loading, setLoading] = useState(true)
+    
 
     useEffect(() => {
         const logOut = onAuthStateChanged(auth, authenticatedUser => { //this observer get excuted even inside an useeffect
@@ -32,7 +34,8 @@ export const AuthUserProvider = (props) => {
             rooms,
             setRooms,
             unfilteredRooms,
-            setUnfilteredRooms
+            setUnfilteredRooms,
+
         }}>
 
             {children}

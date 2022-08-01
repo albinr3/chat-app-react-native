@@ -270,6 +270,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(':react-native-contacts')
     implementation platform('com.google.firebase:firebase-bom:30.2.0')
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
@@ -297,7 +298,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-    implementation project(':react-native-contacts')
+    
 }
 
 if (isNewArchitectureEnabled()) {

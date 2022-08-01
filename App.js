@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import BackButton from './components/BackButton';
 
 import { AuthUserProvider } from './context/AuthUserProvider';
 import useUserAuth from './hooks/useUserAuth';
@@ -81,7 +82,10 @@ const ChatStack = () => {
       <Stack.Screen name='HomeTab' component={HomeTab} />
       
       <Stack.Screen name='Chat' component={Chat}
-        options={{headerTitle: (props) => <ChatHeader {...props}/>}}
+        options={({navigation}) => ({
+          headerTitle: (props) => <ChatHeader {...props}/>,
+          headerLeft: () =>  <BackButton navigation={navigation}/>
+      })}
       />
 
       <Stack.Screen name='Contacts' options= {{ title: "Select Contact" }} component={Contacts}/>

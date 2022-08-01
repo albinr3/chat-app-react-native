@@ -1,10 +1,11 @@
 import { where,collection, query, onSnapshot } from "firebase/firestore";
 import {database} from '../config/firebase';
-import React, { useCallback, useLayoutEffect, useState } from "react";
+import React, { useCallback, useLayoutEffect, useState, useEffect } from "react";
 import { View, Pressable, FlatList, Image, StyleSheet } from "react-native";
 import colors from '../colors';
 import useUserAuth from "../hooks/useUserAuth";
 import ContactsIcon from "../components/ContactsIcon";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
     Container,
@@ -18,14 +19,26 @@ import {
     MessageText,
     TextSection,
 } from '../styles/MessageStyles';
-import useContacts from "../hooks/useContacts";
-
-
 
 
 const Home = ({navigation}) => {
     const {user, rooms, setRooms, unfilteredRooms, setUnfilteredRooms} = useUserAuth()
-    //const contacts = useContacts()
+    const [contacts, setContacts] = useState([])
+    useEffect(() => {
+     const getContacts = async () => {
+        try {
+          const value = await AsyncStorage.getItem('contacts')
+          if(value !== null) {
+            setContacts(JSON.parse(value))
+            console.log(JSON.parse(value))
+          }
+        } catch(e) {
+          // error reading value
+          console.log(e)
+        }
+     }
+     getContacts()
+    }, []) 
 
 
 
@@ -154,7 +167,7 @@ const Home = ({navigation}) => {
             style={{borderBottomWidth: 0}}
             renderItem={({item}) => (
                 <Card onPress={() => navigation.navigate('Chat', 
-                  {room: item, contact: getUserExternal(item.participants, user), photo: getUserExternal(item.participants, user).photoURL})}>
+                  {room: item, contact: item.userExternal, photo: item.userExternal.photoURL})}>
                     <UserInfo>
                         <UserImgWrapper>
                             <UserImg source={item.userExternal.photoURL || require("../assets/users/empty-profile.jpg")} />
