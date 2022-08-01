@@ -13,14 +13,16 @@ import useUserAuth from "../hooks/useUserAuth.js";
 import { pickImage, uploadImage } from "../Helpers/Helper.js";
 import { database } from "../config/firebase.js";
 import { setDoc, doc} from 'firebase/firestore';
+import { useNavigation } from "@react-navigation/native";
 
 
-const Profile = ({navigation}) => {
+const Profile = () => {
   const [displayName, setDisplayName] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
 
 
   const {user} = useUserAuth()
+  const navigation = useNavigation()
 
   const handlePress = async () => {
     let photoUrl;
@@ -50,7 +52,7 @@ const Profile = ({navigation}) => {
     ]);
     
     console.log("User created successfully")
-    navigation.navigate("Home");
+    navigation.navigate("HomeTab");
   }
 
   //this function select the image and then storage the local uri

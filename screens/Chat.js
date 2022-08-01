@@ -15,6 +15,7 @@ import React, {
     onSnapshot,
     doc,
     setDoc,
+    updateDoc
   } from 'firebase/firestore';
   import { signOut } from 'firebase/auth';
   import auth, {database} from '../config/firebase';
@@ -29,7 +30,15 @@ import React, {
     const [messages, setMessages] = useState([]); //messages array
     const [roomHash, setRoomHash] = useState(""); 
     const {user} = useUserAuth(); //authenticated user from the context provider
-    const {room, contact, photo} = route.params
+    const {room, contact} = route.params
+    console.log(room, "ahora")
+    
+    let photo;
+    if(!route.params.photo) {
+      photo = require("../assets/users/empty-profile.jpg")
+    } else {
+      photo = route.params.photo
+    }
     const userSender = {
       name: user.displayName,
       _id: user.uid,
@@ -61,7 +70,7 @@ import React, {
       }
 
       const userExternalData = {
-        displayName: userExternal.contactName,
+        contactName: userExternal.contactName,
         email: userExternal.email,
         photoURL: photo
       }
@@ -74,7 +83,7 @@ import React, {
       try {
         await setDoc(roomRef, roomData)
         console.log("room creada")
-        emailHash = `${currUserData.email}:${userExternalData.email}`
+        const emailHash = `${currUserData.email}:${userExternalData.email}`
         setRoomHash(emailHash)
       } catch (error) {
         console.log(error)
@@ -84,19 +93,19 @@ import React, {
     }})()
   }, [])
 
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => (
-  //       <Pressable
-  //         style={{marginRight: 10}}
-  //         onPress={()=>onSignOut()}>
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Pressable
+          style={{marginRight: 10}}
+          onPress={()=>onSignOut()}>
 
-  //           <Icon name="sign-out" size={24} color={colors.gray} style={{marginRight: 10}}/>
+            <Icon name="sign-out" size={24} color={colors.gray} style={{marginRight: 10}}/>
 
-  //       </Pressable>
-  //     )
-  //   });
-  // }, [navigation]);
+        </Pressable>
+      )
+    });
+  }, [navigation]);
 
   useLayoutEffect(() => {
 
@@ -109,13 +118,16 @@ import React, {
         .filter(({ type }) => type === "added")
         .map(({ doc }) => {
           const message = doc.data();
+      
+
           return { ...message, createdAt: message.createdAt.toDate() };
         })
+        
         
       appendMessages(messagesFirestore);
     });
 
-    return querySnapshot;
+    return ()=> querySnapshot();
   }, []);
 
   //on send new message function, it need a new message as arg.
@@ -123,20 +135,25 @@ import React, {
   // and we pass the previous messages and the new as args 
   //to the giftedchat append method.
   const appendMessages = useCallback((messages) => {
+   
     setMessages(previousMessages =>{
-      GiftedChat.append(previousMessages, messages)
-    });
+    
+      return GiftedChat.append(previousMessages, messages)
+    }
+      
+    );
     
   }, [messages]);
 
   async function onSend(messages = []) {
-    console.log(user, "user")
-    console.log(messages, "mensajes")
+   
     const writes = messages.map((m) => addDoc(roomMessagesRef, m));
     const lastMessage = messages[messages.length - 1];
     writes.push(updateDoc(roomRef, { lastMessage }));
     await Promise.all(writes);
+    console.log("todo terminado")
   }
+
 
   const renderSend = (props) => {
     return (
@@ -159,9 +176,9 @@ import React, {
     );
   }
 
-
+  
   return (
-    <ImageBackground style={{flex: 1}} resizeMode='cover' source={require("../assets/Background-chat-image.jpg")}>
+     <ImageBackground style={{flex: 1}} resizeMode='cover' source={require("../assets/Background-chat-image.jpg")}>
       <GiftedChat
         messages={messages}
         showAvatarForEveryMessage={false}
@@ -180,7 +197,7 @@ import React, {
         // scrollToBottomComponent={scrollToBottomComponent}
         user={userSender}
       />
-  </ImageBackground>
+   </ImageBackground>
   );
 }
 

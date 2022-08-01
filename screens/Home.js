@@ -18,10 +18,25 @@ import {
     MessageText,
     TextSection,
 } from '../styles/MessageStyles';
+import useContacts from "../hooks/useContacts";
+
+
 
 
 const Home = ({navigation}) => {
     const {user, rooms, setRooms, unfilteredRooms, setUnfilteredRooms} = useUserAuth()
+    //const contacts = useContacts()
+
+
+
+    function getUserExt(user, contacts) {
+      const userContact = contacts.find((c) => c.email === user.email);
+      const userContact2 = userContact?.contactName;
+      console.log(userContact2)
+      return userContact2
+    }
+    
+
 
     useLayoutEffect(() => {
         //here we get the chat colletion or we create it ffrom firebase
@@ -122,13 +137,15 @@ const Home = ({navigation}) => {
       ];
 
       const getUserExternal = (participants, user) => {
-        const userExternal = participants.filter((participant) => {
-         user.email !== participant.email 
-        })
+        const userExternal = participants.filter((participant) => (
+          participant.email !== user.email
+        ))
+        console.log(userExternal, "pr")
 
-        return userExternal
+        return userExternal[0]
       }
-
+      
+      
     return (
         <Container>
             <FlatList 
@@ -140,14 +157,14 @@ const Home = ({navigation}) => {
                   {room: item, contact: getUserExternal(item.participants, user), photo: getUserExternal(item.participants, user).photoURL})}>
                     <UserInfo>
                         <UserImgWrapper>
-                            <UserImg source={item.userImg} />
+                            <UserImg source={item.userExternal.photoURL || require("../assets/users/empty-profile.jpg")} />
                         </UserImgWrapper>
                         <TextSection>
                             <UserInfoText>
-                                <UserName>{item.userName}</UserName>
-                                <PostTime>{item.messageTime}</PostTime>
+                                <UserName>{getUserExt(item.userExternal, contacts)}</UserName>
+                                <PostTime>{item.lastMessage.createdAt.toDate().toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })}</PostTime>
                             </UserInfoText>
-                            <MessageText>{item.messageText}</MessageText>
+                            <MessageText>{item.lastMessage.text}</MessageText>
                         </TextSection>
                     </UserInfo>
                 </Card>
