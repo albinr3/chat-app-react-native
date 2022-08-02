@@ -25,6 +25,8 @@ const Contacts = () => {
 function ContactPreview({ contact, image }) {
     const { unfilteredRooms } = useUserAuth();
     const [user, setUser] = useState(contact);
+    console.log(contact, "de5 contactpreview")
+    useEffect(() => console.log(unfilteredRooms, "rooms sin filtro"), [unfilteredRooms])
   
     useEffect(() => {
       const q = query(
@@ -42,7 +44,9 @@ function ContactPreview({ contact, image }) {
 
     
     return (
-        <ListContact contact={user} room={unfilteredRooms.find(room => room.participantsArray.includes(contact.email))}/> 
+        <ListContact 
+        contact={user} 
+        room={unfilteredRooms.find(room => room.participantsArray.includes(contact.email))}/> 
     );
   }
 

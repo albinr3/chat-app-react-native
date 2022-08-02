@@ -7,63 +7,51 @@ import useUserAuth from "../hooks/useUserAuth";
 import ContactsIcon from "../components/ContactsIcon";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {
-    Container,
-    Card,
-    UserInfo,
-    UserImgWrapper,
-    UserImg,
-    UserInfoText,
-    UserName,
-    PostTime,
-    MessageText,
-    TextSection,
-} from '../styles/MessageStyles';
+
+import Listcontact from "../components/ListContact";
 
 
 const Home = ({navigation}) => {
     const {user, rooms, setRooms, unfilteredRooms, setUnfilteredRooms} = useUserAuth()
     const [contacts, setContacts] = useState([])
-    useEffect(() => {
-     const getContacts = async () => {
-        try {
-          const value = await AsyncStorage.getItem('contacts')
-          if(value !== null) {
-            setContacts(JSON.parse(value))
-            console.log(JSON.parse(value))
-          }
-        } catch(e) {
-          // error reading value
-          console.log(e)
-        }
-     }
-     getContacts()
-    }, []) 
+    // useEffect(() => {
+    //  const getContacts = async () => {
+    //     try {
+    //       const value = await AsyncStorage.getItem('contacts')
+    //       if(value !== null) {
+    //         setContacts(JSON.parse(value))
+    //         console.log("contactos buscados")
+    //       }
+    //     } catch(e) {
+    //       // error reading value
+    //       console.log(e)
+    //     }
+    //  }
+    //  getContacts()
+    // }, []) 
 
 
 
-    function getUserExt(user, contacts) {
-      const userContact = contacts.find((c) => c.email === user.email);
-      const userContact2 = userContact?.contactName;
-      console.log(userContact2)
-      return userContact2
+    function getUserExt(room, user) {
+      const userContact = room.participants.find(p => p.email !== user.email)
+      
+     
+      return userContact
     }
     
 
-
-    useLayoutEffect(() => {
-        //here we get the chat colletion or we create it ffrom firebase
-        const collectionRef = collection(database, 'rooms'); 
+    //here we get the chat colletion or we create it ffrom firebase
+    const collectionRef = collection(database, 'rooms'); 
     
-        //here we do a query selecting all the messages from chats from the user email
-        const newQuery = query(collectionRef, where("participantsArray", "array-contains", user.email));
+    //here we do a query selecting all the messages from chats from the user email
+    const newQuery = query(collectionRef, where("participantsArray", "array-contains", user.email));
+    useLayoutEffect(() => {
+        
     
         //here we have an observer called onSnapshot, this keep listening from firebase,
         //waiting from any changes to executes the callback inside.
         const querySnapshot = onSnapshot(newQuery, snapshot => {
          
-          
-          
           //here we iterate over the list of rooms obtained from the query.
           //and we filter to not show the empty rooms, and then we create
           // a new list and inside it we create a new object with the info of each room.
@@ -148,45 +136,22 @@ const Home = ({navigation}) => {
             'Hey there, this is my test for a post of my social app in React Native.',
         },
       ];
-
-      const getUserExternal = (participants, user) => {
-        const userExternal = participants.filter((participant) => (
-          participant.email !== user.email
-        ))
-        console.log(userExternal, "pr")
-
-        return userExternal[0]
-      }
-      
       
     return (
-        <Container>
-            <FlatList 
-            data={rooms}
-            keyExtractor={item=>item.id}
-            style={{borderBottomWidth: 0}}
-            renderItem={({item}) => (
-                <Card onPress={() => navigation.navigate('Chat', 
-                  {room: item, contact: item.userExternal, photo: item.userExternal.photoURL})}>
-                    <UserInfo>
-                        <UserImgWrapper>
-                            <UserImg source={item.userExternal.photoURL || require("../assets/users/empty-profile.jpg")} />
-                        </UserImgWrapper>
-                        <TextSection>
-                            <UserInfoText>
-                                <UserName>{getUserExt(item.userExternal, contacts)}</UserName>
-                                <PostTime>{item.lastMessage.createdAt.toDate().toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit' })}</PostTime>
-                            </UserInfoText>
-                            <MessageText>{item.lastMessage.text}</MessageText>
-                        </TextSection>
-                    </UserInfo>
-                </Card>
-            )}
-            />
+      <>
+      {rooms.map((room) => (
+        <Listcontact
+          type="chat"
+          key={room.id}
+          room={room}
+          user={getUserExt(room, user)}
+        />
+      ))}
             <View style={s.floatingButton}>
                 <ContactsIcon/>
             </View>
-      </Container>
+            </>
+      
     );
     };
 

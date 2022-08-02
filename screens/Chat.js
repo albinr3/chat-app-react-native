@@ -7,6 +7,8 @@ import React, {
 
   import { ImageBackground, Pressable, View} from 'react-native';
   import {Send, GiftedChat } from 'react-native-gifted-chat';
+  import 'react-native-get-random-values'
+  import { nanoid } from 'nanoid'
   import {
     collection,
     addDoc,
@@ -24,20 +26,21 @@ import React, {
   import colors from '../colors';
   import useUserAuth from "../hooks/useUserAuth.js"
 
-
+  const randomId = nanoid();
   export default function Chat({navigation, route}) {
 
     const [messages, setMessages] = useState([]); //messages array
     const [roomHash, setRoomHash] = useState(""); 
     const {user} = useUserAuth(); //authenticated user from the context provider
-    const {room, contact} = route.params
-    console.log(room, "ahora")
+    const contact = route.params.contact;
+    const room = route.params.room;
+    useEffect(()=>console.log(room, "ahora"), [room])
     
     let photo;
-    if(!route.params.photo) {
+    if(!contact.photoURL) {
       photo = require("../assets/users/empty-profile.jpg")
     } else {
-      photo = route.params.photo
+      photo = contact.photoURL
     }
     const userSender = {
       name: user.displayName,
@@ -45,8 +48,9 @@ import React, {
       avatar: user.photoURL
     }
     const userExternal = contact
-    const roomId = room ? room.id : Date.now().toString()
-   
+    
+    useEffect(()=>console.log(roomId, "id"), [roomId])
+    const roomId = room ? room.id : randomId;
     const roomRef = doc(database, "rooms", roomId);
     const roomMessagesRef = collection(database, "rooms", roomId, "messages")
    

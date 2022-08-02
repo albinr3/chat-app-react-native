@@ -35,17 +35,17 @@ const useContacts = () => {
                     if(getContactInfo(contacts).length > 0){
 
                         //first we save them to the storage to use them again
-                       const saveContacts = async () => {
-                            try {
-                                await AsyncStorage.setItem(
-                                  "contacts", JSON.stringify(getContactInfo(contacts))
-                                );
-                                console.log("contactos guardados")
-                              } catch (error) {
-                                console.log(error)
-                              }
-                        }
-                        saveContacts()
+                      //  const saveContacts = async () => {
+                      //       try {
+                      //           await AsyncStorage.setItem(
+                      //             "contacts", JSON.stringify(getContactInfo(contacts))
+                      //           );
+                      //           console.log("contactos guardados")
+                      //         } catch (error) {
+                      //           console.log(error)
+                      //         }
+                      //   }
+                        // saveContacts()
                        setContacts(getContactInfo(contacts))
                     }
                     }).catch(e => {
