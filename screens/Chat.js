@@ -7,7 +7,7 @@ import React, {
   } from 'react';
 
   import { ImageBackground, Pressable, View} from 'react-native';
-  import {Send, GiftedChat } from 'react-native-gifted-chat';
+  import {Send, GiftedChat, Actions } from 'react-native-gifted-chat';
   
   import {
     collection,
@@ -28,6 +28,7 @@ import React, {
 //import { useFocusEffect } from '@react-navigation/native';
   import "react-native-get-random-values";
   import { nanoid } from "nanoid";
+import { takeImage, uploadImage } from '../Helpers/Helper';
 
   const randomId = nanoid()
   export default function Chat({navigation, route}) {
@@ -37,10 +38,11 @@ import React, {
  
     const {user} = useUserAuth(); //authenticated user from the context provider
     const contact = route.params.contact;
+    const selectedImage = route.params.image
     const room = route.params.room;
-    console.log(randomId)
+    const userExternal = contact
     const roomId = room ? room.id : randomId
-    console.log(randomId)
+   
     const roomRef = doc(database, "rooms", roomId)
     const roomMessagesRef =collection(database, "rooms", roomId, "messages")
     let photo;
@@ -54,15 +56,8 @@ import React, {
       _id: user.uid,
       avatar: user.photoURL
     }
+   
     
-
-    
-    useEffect(()=> {
-      console.log(room, "room ")
-      console.log(roomId, "room id ahora")
-      console.log(randomId, "random id")
-    }, [roomId])
-    const userExternal = contact
     
    
    
@@ -78,6 +73,12 @@ import React, {
 
   useEffect( () => {
     (async () => {
+      const emailHash = `${user.email}:${userExternal.email}`
+      setRoomHash(emailHash)
+      
+      //this function if there is not a room, it will create a new room after you select a contact,
+      //even if you dont write anything, althoung you only will see the chats with messages at the home.
+
       if(!room){
       const currUserData = {
         displayName: user.displayName,
@@ -102,6 +103,9 @@ import React, {
         
         const emailHash = `${currUserData.email}:${userExternalData.email}`
         setRoomHash(emailHash)
+        if(selectedImage && selectedImage.uri) {
+          await sendImage(selectedImage.uri, emailHash)
+        }
       } catch (error) {
         console.log(error)
       }
@@ -130,17 +134,14 @@ import React, {
     //waiting from any changes to executes the callback inside.
 
     const querySnapshot = onSnapshot(roomMessagesRef, snapshot => {
-      
       const messagesFirestore = snapshot
         .docChanges()
         .filter(({ type }) => type === "added")
         .map(({ doc }) => {
           const message = doc.data();
-      
-
           return { ...message, createdAt: message.createdAt.toDate() };
         })
-        
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         
       appendMessages(messagesFirestore);
     });
@@ -153,13 +154,9 @@ import React, {
   // and we pass the previous messages and the new as args 
   //to the giftedchat append method.
   const appendMessages = useCallback((messages) => {
-   
     setMessages(previousMessages =>{
-    
       return GiftedChat.append(previousMessages, messages)
-    }
-      
-    );
+    } );
     
   }, [messages]);
 
@@ -172,6 +169,36 @@ import React, {
     //console.log("todo terminado")
   }
 
+  const sendImage = async (imageUri, roomPath) => {
+    const {url, fileName} = await uploadImage(
+      imageUri, 
+      user.uid, 
+      `images/rooms/${roomPath || roomHash}`)
+
+    const message = {
+      _id: fileName,
+      text: "",
+      createdAt: new Date(),
+      user: userSender,
+      image: url,
+    };
+
+    const lastMessage = {...message, text: "Image"}
+
+    await Promise.all([addDoc(roomMessagesRef, message), updateDoc(roomRef, { lastMessage })])
+  }
+
+  const handleImagePicker = async () => {
+    let imageUri;
+    const imagePath = await takeImage()
+    if(!imagePath.didCancel) {
+      imageUri = imagePath.assets[0].uri
+      await sendImage(imageUri)
+    }
+    
+  }
+
+  
 
   const renderSend = (props) => {
     return (
@@ -180,7 +207,7 @@ import React, {
           <MaterialCommunityIcons
             name="send-circle"
             style={{marginBottom: 5, marginRight: 5}}
-            size={32}
+            size={34}
             color="#2e64e5"
           />
         </View>
@@ -193,7 +220,6 @@ import React, {
       <Icon name='angle-double-down' size={22} color='#333' />
     );
   }
-
   
   return (
      <ImageBackground style={{flex: 1}} resizeMode='cover' source={require("../assets/Background-chat-image.jpg")}>
@@ -210,9 +236,21 @@ import React, {
           borderRadius: 20,
         }}
         alwaysShowSend
-        // renderSend={renderSend}
-        // scrollToBottom
-        // scrollToBottomComponent={scrollToBottomComponent}
+        renderActions={(props)=>(
+          <Actions {...props}
+           containerStyle={{
+            position: "absolute",
+            right: 60,
+            bottom: 1,
+            zIndex: 9999}}
+            onPressActionButton={handleImagePicker}
+            icon={() => (<MaterialCommunityIcons name="camera" size={25} color="grey"/>)}
+
+            />
+        )}
+        renderSend={renderSend}
+        scrollToBottom
+        scrollToBottomComponent={scrollToBottomComponent}
         user={userSender}
       />
    </ImageBackground>

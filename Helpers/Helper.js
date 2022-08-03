@@ -3,6 +3,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage';
 import {Text, Image} from 'react-native';
 import React, {useState} from 'react';
+import { nanoid }from 'nanoid'
 
 
 
@@ -18,6 +19,16 @@ export async function pickImage() {
   const result = await launchImageLibrary(options);
   const imagePath = result
   return imagePath
+}
+
+export const takeImage = async () => {
+  const options = {
+    saveToPhotos: true,
+    mediaType: 'photo',
+    includeBase64: false,
+  };
+  const result = await launchCamera(options)
+  return result
 }
 
 //function to upload an image from the device to firebase
@@ -39,8 +50,9 @@ export async function uploadImage(imagePath, userId, fireImagePath, imageName) {
     xhr.send(null);
   });
  
-
-  const imageRef = ref(storage, `${fireImagePath}/${userId}/${imageName}.jpg`);
+  const fileName = imageName || nanoid();
+  console.log(`${fireImagePath}/${userId}/${fileName}.jpg`)
+  const imageRef = ref(storage, `${fireImagePath}/${userId}/${fileName}.jpg`);
 
   const snapshot = await uploadBytesResumable(imageRef, blob, {
     contentType: 'image/jpeg',
@@ -49,7 +61,7 @@ export async function uploadImage(imagePath, userId, fireImagePath, imageName) {
 
   const url = await getDownloadURL(snapshot.ref);
   
-  return url
+  return {url, fileName}
 }
 const Helper = () => {
   
