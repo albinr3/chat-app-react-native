@@ -13,28 +13,12 @@ import Listcontact from "../components/ListContact";
 
 const Home = ({navigation}) => {
     const {user, rooms, setRooms, unfilteredRooms, setUnfilteredRooms} = useUserAuth()
-    const [contacts, setContacts] = useState([])
-    // useEffect(() => {
-    //  const getContacts = async () => {
-    //     try {
-    //       const value = await AsyncStorage.getItem('contacts')
-    //       if(value !== null) {
-    //         setContacts(JSON.parse(value))
-    //         console.log("contactos buscados")
-    //       }
-    //     } catch(e) {
-    //       // error reading value
-    //       console.log(e)
-    //     }
-    //  }
-    //  getContacts()
-    // }, []) 
-
-
-
+  
     function getUserExt(room, user) {
       const userContact = room.participants.find(p => p.email !== user.email)
-      
+      //console.log(userContact, "resultado desde getuserext")
+      //console.log(room, "room desde getuser")
+     // console.log(user, "userYo desde getuser")
      
       return userContact
     }
@@ -45,7 +29,7 @@ const Home = ({navigation}) => {
     
     //here we do a query selecting all the messages from chats from the user email
     const newQuery = query(collectionRef, where("participantsArray", "array-contains", user.email));
-    useLayoutEffect(() => {
+    useEffect(() => {
         
     
         //here we have an observer called onSnapshot, this keep listening from firebase,
@@ -144,7 +128,7 @@ const Home = ({navigation}) => {
           type="chat"
           key={room.id}
           room={room}
-          user={getUserExt(room, user)}
+          contact={getUserExt(room, user)}
         />
       ))}
             <View style={s.floatingButton}>

@@ -23,7 +23,7 @@ export default function Listcontact({contact, room, type}) {
   // } else {
     photo = require('../assets/users/empty-profile.jpg');
   //}
-
+  
   const navigation = useNavigation();
   return (
     <Container>

@@ -25,8 +25,9 @@ const Contacts = () => {
 function ContactPreview({ contact, image }) {
     const { unfilteredRooms } = useUserAuth();
     const [user, setUser] = useState(contact);
-    console.log(contact, "de5 contactpreview")
-    useEffect(() => console.log(unfilteredRooms, "rooms sin filtro"), [unfilteredRooms])
+    //console.log(contact, "desde contactpreview")
+    //useEffect(() => console.log(unfilteredRooms, "rooms sin filtro"), [unfilteredRooms])
+    useEffect(() => console.log(user, "user desde contact preview"), [user])
   
     useEffect(() => {
       const q = query(

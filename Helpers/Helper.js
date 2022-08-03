@@ -3,7 +3,11 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {ref, uploadBytesResumable, getDownloadURL} from 'firebase/storage';
 import {Text, Image} from 'react-native';
 import React, {useState} from 'react';
+import uuid from 'react-native-uuid';
 
+export function getRandomId() {
+  return uuid.v4();
+}
 
 //function to select an image from the device
 export async function pickImage() {

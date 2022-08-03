@@ -7,8 +7,7 @@ import React, {
 
   import { ImageBackground, Pressable, View} from 'react-native';
   import {Send, GiftedChat } from 'react-native-gifted-chat';
-  import 'react-native-get-random-values'
-  import { nanoid } from 'nanoid'
+  
   import {
     collection,
     addDoc,
@@ -25,17 +24,24 @@ import React, {
   import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
   import colors from '../colors';
   import useUserAuth from "../hooks/useUserAuth.js"
+//import { useFocusEffect } from '@react-navigation/native';
+  import "react-native-get-random-values";
+  import { nanoid } from "nanoid";
 
-  const randomId = nanoid();
+  const randomId = nanoid()
   export default function Chat({navigation, route}) {
 
     const [messages, setMessages] = useState([]); //messages array
     const [roomHash, setRoomHash] = useState(""); 
+ 
     const {user} = useUserAuth(); //authenticated user from the context provider
     const contact = route.params.contact;
     const room = route.params.room;
-    useEffect(()=>console.log(room, "ahora"), [room])
-    
+    console.log(randomId)
+    const roomId = room ? room.id : randomId`
+    console.log(randomId)
+    const roomRef = doc(database, "rooms", roomId)
+    const roomMessagesRef =collection(database, "rooms", roomId, "messages")
     let photo;
     if(!contact.photoURL) {
       photo = require("../assets/users/empty-profile.jpg")
@@ -47,12 +53,17 @@ import React, {
       _id: user.uid,
       avatar: user.photoURL
     }
+    
+
+    
+    useEffect(()=> {
+      console.log(room, "room ")
+      console.log(roomId, "room id ahora")
+      console.log(randomId, "random id")
+    }, [roomId])
     const userExternal = contact
     
-    useEffect(()=>console.log(roomId, "id"), [roomId])
-    const roomId = room ? room.id : randomId;
-    const roomRef = doc(database, "rooms", roomId);
-    const roomMessagesRef = collection(database, "rooms", roomId, "messages")
+   
    
   //sign out function from firebase
   const onSignOut = async () => {
@@ -87,6 +98,7 @@ import React, {
       try {
         await setDoc(roomRef, roomData)
         console.log("room creada")
+        
         const emailHash = `${currUserData.email}:${userExternalData.email}`
         setRoomHash(emailHash)
       } catch (error) {
@@ -111,10 +123,14 @@ import React, {
     });
   }, [navigation]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
 
     //here we have an observer called onSnapshot, this keep listening from firebase,
     //waiting from any changes to executes the callback inside.
+   
+    
+    console.log(roomRef, "esto en useffect") 
+    console.log(roomMessagesRef, "esto en useeffcet")
     const querySnapshot = onSnapshot(roomMessagesRef, snapshot => {
       
       const messagesFirestore = snapshot
@@ -155,7 +171,7 @@ import React, {
     const lastMessage = messages[messages.length - 1];
     writes.push(updateDoc(roomRef, { lastMessage }));
     await Promise.all(writes);
-    console.log("todo terminado")
+    //console.log("todo terminado")
   }
 
 
