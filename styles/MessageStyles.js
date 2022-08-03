@@ -6,6 +6,7 @@ export const Container = styled.View`
   padding-right: 20px;
   align-items: center;
   background-color: #ffffff;
+  max-height: 80px;
 `;
 
 export const Card = styled.Pressable`
@@ -92,5 +93,5 @@ export const PostTime = styled.Text`
 export const MessageText = styled.Text`
   font-size: 14px;
   color: #616161;
-  font-weight: 350;
+  font-weight: 400;
 `;

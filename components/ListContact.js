@@ -26,6 +26,8 @@ export default function Listcontact({contact, room, type}) {
   
   const navigation = useNavigation();
   return (
+    <>
+    {type==="chat" ? (
     <Container>
       <Card
         onPress={() =>
@@ -44,7 +46,6 @@ export default function Listcontact({contact, room, type}) {
               }
             />
           </UserImgWrapper>
-          {type==="chat" ? (
           <TextSection>
             <UserInfoText>
               <UserName>{contact.contactName}</UserName>
@@ -62,19 +63,39 @@ export default function Listcontact({contact, room, type}) {
             <MessageText>{room.lastMessage.text}</MessageText>
           
           </TextSection>
-          ) : (
+        </UserInfo>
+      </Card>
+    </Container>):
+    (<Container>
+      <Card
+        onPress={() =>
+          navigation.navigate('Chat', {
+            room: room,
+            contact: contact,
+            photo,
+          })
+        }>
+        <UserInfo>
+          <UserImgWrapper>
+            <UserImg
+              source={
+                photo ||
+                require('../assets/users/empty-profile.jpg')
+              }
+            />
+          </UserImgWrapper>    
             <TextSectionContact>
             <UserInfoText>
               <UserNameContact>{contact.contactName}</UserNameContact>
             </UserInfoText>
-          
           </TextSectionContact>
-          )}
-          
         </UserInfo>
       </Card>
     </Container>
-  );
-}
+    
+    )}
+    </>
+    )
+  }
 
 const styles = StyleSheet.create({});
