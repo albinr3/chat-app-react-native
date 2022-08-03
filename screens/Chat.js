@@ -2,7 +2,8 @@ import React, {
     useState,
     useLayoutEffect,
     useCallback,
-    useEffect
+    useEffect,
+    useMemo
   } from 'react';
 
   import { ImageBackground, Pressable, View} from 'react-native';
@@ -30,7 +31,7 @@ import React, {
 
   const randomId = nanoid()
   export default function Chat({navigation, route}) {
-
+    const randomId = useMemo(() => nanoid(), []);
     const [messages, setMessages] = useState([]); //messages array
     const [roomHash, setRoomHash] = useState(""); 
  
@@ -38,7 +39,7 @@ import React, {
     const contact = route.params.contact;
     const room = route.params.room;
     console.log(randomId)
-    const roomId = room ? room.id : randomId`
+    const roomId = room ? room.id : randomId
     console.log(randomId)
     const roomRef = doc(database, "rooms", roomId)
     const roomMessagesRef =collection(database, "rooms", roomId, "messages")
@@ -127,10 +128,7 @@ import React, {
 
     //here we have an observer called onSnapshot, this keep listening from firebase,
     //waiting from any changes to executes the callback inside.
-   
-    
-    console.log(roomRef, "esto en useffect") 
-    console.log(roomMessagesRef, "esto en useeffcet")
+
     const querySnapshot = onSnapshot(roomMessagesRef, snapshot => {
       
       const messagesFirestore = snapshot
