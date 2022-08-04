@@ -51,7 +51,7 @@ export async function uploadImage(imagePath, userId, fireImagePath, imageName) {
   });
  
   const fileName = imageName || nanoid();
-  console.log(`${fireImagePath}/${userId}/${fileName}.jpg`)
+  
   const imageRef = ref(storage, `${fireImagePath}/${userId}/${fileName}.jpg`);
 
   const snapshot = await uploadBytesResumable(imageRef, blob, {

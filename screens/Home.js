@@ -16,9 +16,7 @@ const Home = ({navigation}) => {
   
     function getUserExt(room, user) {
       const userContact = room.participants.find(p => p.email !== user.email)
-      //console.log(userContact, "resultado desde getuserext")
-      //console.log(room, "room desde getuser")
-     // console.log(user, "userYo desde getuser")
+
      
       return userContact
     }

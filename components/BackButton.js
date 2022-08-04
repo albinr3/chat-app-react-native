@@ -5,7 +5,7 @@ import React from 'react'
 
 const BackButton = ({navigation}) => {
   return (
-    <Pressable style={{marginLeft: 6, marginRight: 10}} onPress={() => navigation.navigate("HomeTab")}>
+    <Pressable style={{marginLeft: 6, marginRight: 10}} onPress={() => navigation.navigate("Home")}>
         <Icon name='arrow-left' color={"white"} size={24}/>
     </Pressable>
   )

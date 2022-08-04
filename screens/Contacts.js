@@ -6,8 +6,11 @@ import ListContact from "../components/ListContact"
 import { database } from "../config/firebase";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 
-const Contacts = () => {
+const Contacts = ({route}) => {
   const contacts = useContacts()
+  const imageToSend = route.params && route.params.imageToSend;
+
+
   return (
 
     <FlatList 
@@ -15,19 +18,18 @@ const Contacts = () => {
     keyExtractor={item=>item.id}
     style={{borderBottomWidth: 0}}
     renderItem={({item}) => (
-        <ContactPreview contact={item}/>
+        <ContactPreview contact={item} imageToSend={imageToSend}/>
     )}
     />  
 
   )
 }
 
-function ContactPreview({ contact, image }) {
+function ContactPreview({ contact, imageToSend }) {
     const { unfilteredRooms } = useUserAuth();
+    
     const [user, setUser] = useState(contact);
-    //console.log(contact, "desde contactpreview")
-    //useEffect(() => console.log(unfilteredRooms, "rooms sin filtro"), [unfilteredRooms])
-    useEffect(() => console.log(user, "user desde contact preview"), [user])
+   
   
     useEffect(() => {
       const q = query(
@@ -43,11 +45,12 @@ function ContactPreview({ contact, image }) {
       return () => unsubscribe();
     }, []);
 
-    
+    console.log(imageToSend, "contact preview")
     return (
         <ListContact 
         contact={user} 
-        room={unfilteredRooms.find(room => room.participantsArray.includes(contact.email))}/> 
+        room={unfilteredRooms.find(room => room.participantsArray.includes(contact.email))}
+        imageToSend={imageToSend}/> 
     );
   }
 

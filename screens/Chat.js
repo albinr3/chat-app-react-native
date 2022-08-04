@@ -8,7 +8,7 @@ import React, {
 
   import { ImageBackground, Pressable, View} from 'react-native';
   import {Send, GiftedChat, Actions } from 'react-native-gifted-chat';
-  
+  import { useRoute } from "@react-navigation/native";
   import {
     collection,
     addDoc,
@@ -30,15 +30,18 @@ import React, {
   import { nanoid } from "nanoid";
 import { takeImage, uploadImage } from '../Helpers/Helper';
 
-  const randomId = nanoid()
-  export default function Chat({navigation, route}) {
+  
+  export default function Chat({navigation}) {
     const randomId = useMemo(() => nanoid(), []);
     const [messages, setMessages] = useState([]); //messages array
     const [roomHash, setRoomHash] = useState(""); 
- 
+    const route = useRoute();
     const {user} = useUserAuth(); //authenticated user from the context provider
     const contact = route.params.contact;
-    const selectedImage = route.params.image
+    const imageToSend = route.params.imageToSend
+    if(imageToSend && imageToSend.uri) {
+      console.log(imageToSend.uri)
+    }
     const room = route.params.room;
     const userExternal = contact
     const roomId = room ? room.id : randomId
@@ -73,8 +76,7 @@ import { takeImage, uploadImage } from '../Helpers/Helper';
 
   useEffect( () => {
     (async () => {
-      const emailHash = `${user.email}:${userExternal.email}`
-      setRoomHash(emailHash)
+      
       
       //this function if there is not a room, it will create a new room after you select a contact,
       //even if you dont write anything, althoung you only will see the chats with messages at the home.
@@ -100,18 +102,18 @@ import { takeImage, uploadImage } from '../Helpers/Helper';
       try {
         await setDoc(roomRef, roomData)
         console.log("room creada")
-        
-        const emailHash = `${currUserData.email}:${userExternalData.email}`
-        setRoomHash(emailHash)
-        if(selectedImage && selectedImage.uri) {
-          await sendImage(selectedImage.uri, emailHash)
-        }
       } catch (error) {
         console.log(error)
       }
 
       
-    }})()
+    }
+    const emailHash = `${user.email}:${userExternal.email}`
+    setRoomHash(emailHash)
+    if(imageToSend && imageToSend.uri) {
+      await sendImage(imageToSend.uri, emailHash)
+    }
+  })()
   }, [])
 
   useLayoutEffect(() => {
@@ -170,11 +172,13 @@ import { takeImage, uploadImage } from '../Helpers/Helper';
   }
 
   const sendImage = async (imageUri, roomPath) => {
+    console.log(imageUri, "image uri ")
+    console.log(roomPath, "room path")
     const {url, fileName} = await uploadImage(
       imageUri, 
       user.uid, 
       `images/rooms/${roomPath || roomHash}`)
-
+      console.log("imagen subida")
     const message = {
       _id: fileName,
       text: "",

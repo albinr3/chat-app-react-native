@@ -4,15 +4,19 @@ import { takeImage } from '../Helpers/Helper'
 import { useFocusEffect } from '@react-navigation/native'
 const Photo = ({navigation}) => {
     useFocusEffect(
-      useCallback(async () => {
-        const imagePath = await takeImage()
+      useCallback(() => {
+       const newImage = async () => {
+          const imagePath = await takeImage()
         if(!imagePath.didCancel) {
-          navigation.navigate("Contacts")
+          navigation.navigate("Contacts", {imageToSend : imagePath.assets[0]})
+          
+          
         } else {
           navigation.navigate("Home")
         }
 
-        return () => imagePath()
+       }
+       newImage()
       }, [navigation])
     )
   

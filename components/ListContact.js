@@ -16,14 +16,14 @@ import {
 } from '../styles/MessageStyles';
 import {useNavigation} from '@react-navigation/native';
 
-export default function Listcontact({contact, room, type}) {
+export default function Listcontact({contact, room, type, imageToSend}) {
   let photo;
   // if (contact.userDoc?.photoURL) {
   //   photo = {uri: contact.userDoc.photoURL};
   // } else {
     photo = require('../assets/users/empty-profile.jpg');
   //}
-  
+  console.log(imageToSend, "desde liscontact")
   const navigation = useNavigation();
   return (
     <>
@@ -73,6 +73,7 @@ export default function Listcontact({contact, room, type}) {
             room: room,
             contact: contact,
             photo,
+            imageToSend: imageToSend,
           })
         }>
         <UserInfo>
