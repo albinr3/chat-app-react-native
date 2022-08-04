@@ -49,11 +49,13 @@ import { takeImage, uploadImage } from '../Helpers/Helper';
     const roomRef = doc(database, "rooms", roomId)
     const roomMessagesRef =collection(database, "rooms", roomId, "messages")
     let photo;
-    if(!contact.photoURL) {
+    if(!contact?.userDoc.photoURL) {
       photo = require("../assets/users/empty-profile.jpg")
     } else {
-      photo = contact.photoURL
+      photo = contact.userDoc.photoURL
     }
+
+    
     const userSender = {
       name: user.displayName,
       _id: user.uid,

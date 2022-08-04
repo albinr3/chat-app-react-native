@@ -45,7 +45,7 @@ function ContactPreview({ contact, imageToSend }) {
       return () => unsubscribe();
     }, []);
 
-    console.log(imageToSend, "contact preview")
+    
     return (
         <ListContact 
         contact={user} 

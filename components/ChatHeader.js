@@ -5,12 +5,14 @@ import { UserImgContactChat, UserImgWrapper, UserInfo,TextSectionContact, UserIn
 
 const ChatHeader = () => {
     const route = useRoute()
+    let contact = route.params.contact
     let photo;
-    if(!route.params.photo) {
-      photo = require("../assets/users/empty-profile.jpg")
-    } else {
-      photo = route.params.photo
-    }
+    
+  if (contact.userDoc?.photoURL) {
+    photo = {uri: contact.userDoc.photoURL};
+   } else {
+    photo = require('../assets/users/empty-profile.jpg');
+  }
     
   return (
     <UserInfo>

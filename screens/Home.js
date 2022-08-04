@@ -16,8 +16,7 @@ const Home = ({navigation}) => {
   
     function getUserExt(room, user) {
       const userContact = room.participants.find(p => p.email !== user.email)
-
-     
+      console.log(userContact, "desde home")
       return userContact
     }
     
@@ -50,74 +49,6 @@ const Home = ({navigation}) => {
         return querySnapshot;
       }, []);
 
-
-    const Messages = [
-        {
-          id: '1',
-          userName: 'Jenny Doe',//room.contactName
-          userImg: "https://firebasestorage.googleapis.com/v0/b/chat-app-be1cd.appspot.com/o/images%2FO4burOdxXBQ9FH74MAyJHC1w4kd2%2FprofilePicture.jpg?alt=media&token=bcf9a0b1-5084-4de5-b7af-004a4f0b17c1",
-          messageTime: '4 mins ago', //room.lastMessage
-          messageText:  //room.lastMessage.createdAt
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-        {
-          id: '2',
-          userName: 'John Doe',
-          userImg: require('../assets/users/user-1.jpg'),
-          messageTime: '2 hours ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-        {
-          id: '3',
-          userName: 'Ken William',
-          userImg: require('../assets/users/user-4.jpg'),
-          messageTime: '1 hours ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-        {
-          id: '4',
-          userName: 'Selina Paul',
-          userImg: require('../assets/users/user-6.jpg'),
-          messageTime: '1 day ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-        {
-          id: '5',
-          userName: 'Christy Alex',
-          userImg: require('../assets/users/user-7.jpg'),
-          messageTime: '2 days ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-    
-        {
-          id: '6',
-          userName: 'Ken William',
-          userImg: require('../assets/users/user-4.jpg'),
-          messageTime: '1 hours ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-        {
-          id: '7',
-          userName: 'Selina Paul',
-          userImg: require('../assets/users/user-6.jpg'),
-          messageTime: '1 day ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-        {
-          id: '8',
-          userName: 'Christy Alex',
-          userImg: require('../assets/users/user-7.jpg'),
-          messageTime: '2 days ago',
-          messageText:
-            'Hey there, this is my test for a post of my social app in React Native.',
-        },
-      ];
       
     return (
       <>

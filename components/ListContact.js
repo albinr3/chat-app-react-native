@@ -18,12 +18,15 @@ import {useNavigation} from '@react-navigation/native';
 
 export default function Listcontact({contact, room, type, imageToSend}) {
   let photo;
-  // if (contact.userDoc?.photoURL) {
-  //   photo = {uri: contact.userDoc.photoURL};
-  // } else {
+  
+  if (contact.userDoc?.photoURL) { //this is when it comes from the contacts
+    photo = {uri: contact.userDoc.photoURL};
+   } else if (contact?.photoURL) { //this is when it comes from the home
+    photo = {uri: contact?.photoURL};
+   } else {
     photo = require('../assets/users/empty-profile.jpg');
-  //}
-  console.log(imageToSend, "desde liscontact")
+  }
+  
   const navigation = useNavigation();
   return (
     <>
@@ -41,8 +44,7 @@ export default function Listcontact({contact, room, type, imageToSend}) {
           <UserImgWrapper>
             <UserImg
               source={
-                photo ||
-                require('../assets/users/empty-profile.jpg')
+                photo
               }
             />
           </UserImgWrapper>
